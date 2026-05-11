@@ -7,3 +7,79 @@ body {
   canvas {
     display: block;
   }
+
+  #satelliteLabel {
+
+    position: absolute;
+  
+    background: rgba(0, 0, 0, 0.8);
+  
+    color: white;
+  
+    padding: 10px 14px;
+  
+    border-radius: 10px;
+  
+    font-family: Arial, sans-serif;
+  
+    font-size: 14px;
+  
+    pointer-events: none;
+  
+    display: none;
+  
+    z-index: 100;
+  }
+
+  #hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-family: monospace;
+    font-size: 14px;
+    background: rgba(0,0,0,0.4);
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  #alertPanel {
+
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  
+    width: 260px;
+  
+    background: rgba(0,0,0,0.75);
+  
+    color: white;
+  
+    padding: 15px;
+  
+    border-radius: 10px;
+  
+    font-family: Arial;
+  
+    border: 2px solid red;
+  
+    display: none;
+  
+    z-index: 100;
+  }
+  
+  #alertPanel h2 {
+  
+    margin: 0 0 10px 0;
+    color: red;
+  }
+  
+  .danger {
+  
+    color: #ff4444;
+  }
+  
+  .safe {
+  
+    color: #00ff99;
+  }

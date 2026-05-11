@@ -12,9 +12,6 @@ from "https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/+esm";
 
 const scene = new THREE.Scene();
 
-scene.background =
-  new THREE.Color(0x000814);
-
 // ======================
 // Camera
 // ======================
@@ -48,8 +45,6 @@ renderer.setPixelRatio(
   window.devicePixelRatio
 );
 
-renderer.shadowMap.enabled = true;
-
 document.body.appendChild(
   renderer.domElement
 );
@@ -66,9 +61,6 @@ const controls =
 
 controls.enableDamping = true;
 
-controls.minDistance = 8;
-controls.maxDistance = 120;
-
 // ======================
 // Lights
 // ======================
@@ -76,14 +68,14 @@ controls.maxDistance = 120;
 scene.add(
   new THREE.AmbientLight(
     0xffffff,
-    0.18
+    0.6
   )
 );
 
 const dirLight =
   new THREE.DirectionalLight(
     0xffffff,
-    2.2
+    1.5
   );
 
 dirLight.position.set(
@@ -98,7 +90,7 @@ scene.add(
   new THREE.HemisphereLight(
     0xffffff,
     0x222244,
-    0.45
+    1
   )
 );
 
@@ -124,8 +116,7 @@ const earth =
     ),
 
     new THREE.MeshStandardMaterial({
-      map: earthTexture,
-      roughness: 1
+      map: earthTexture
     })
   );
 
@@ -139,19 +130,16 @@ const atmosphere =
   new THREE.Mesh(
 
     new THREE.SphereGeometry(
-      5.08,
+      5.15,
       64,
       64
     ),
 
-    new THREE.MeshPhongMaterial({
+    new THREE.MeshBasicMaterial({
 
-      color: 0x2266ff,
-
+      color: 0x3399ff,
       transparent: true,
-
-      opacity: 0.08,
-
+      opacity: 0.15,
       side: THREE.BackSide
     })
   );
@@ -169,12 +157,12 @@ function createStars() {
 
   const vertices = [];
 
-  for (let i = 0; i < 7000; i++) {
+  for (let i = 0; i < 5000; i++) {
 
     vertices.push(
-      (Math.random() - 0.5) * 2500,
-      (Math.random() - 0.5) * 2500,
-      (Math.random() - 0.5) * 2500
+      (Math.random() - 0.5) * 2000,
+      (Math.random() - 0.5) * 2000,
+      (Math.random() - 0.5) * 2000
     );
   }
 
@@ -189,7 +177,7 @@ function createStars() {
   const material =
     new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.6
+      size: 0.7
     });
 
   const stars =
@@ -210,11 +198,6 @@ createStars();
 const label =
   document.getElementById(
     "hud"
-  );
-
-const alertPanel =
-  document.getElementById(
-    "alertPanel"
   );
 
 // ======================
@@ -248,17 +231,10 @@ const raycaster =
   new THREE.Raycaster();
 
 // ======================
-// Orbit Trails
+// Satellites
 // ======================
 
-const orbitTrails =
-  new THREE.Group();
-
-scene.add(orbitTrails);
-
-// ======================
-// Satellite Data
-// ======================
+const satellites = [];
 
 const satelliteData = [
 
@@ -309,10 +285,8 @@ const satelliteData = [
 ];
 
 // ======================
-// Satellites
+// Create Satellite Models
 // ======================
-
-const satellites = [];
 
 satelliteData.forEach((satData) => {
 
@@ -334,11 +308,11 @@ satelliteData.forEach((satData) => {
 
         color:
           satData.name === "ISS"
-            ? 0x00ff88
-            : 0xff5555,
+            ? 0x00ff00
+            : 0xff4444,
 
-        metalness: 0.8,
-        roughness: 0.25
+        metalness: 0.7,
+        roughness: 0.3
       })
     );
 
@@ -376,6 +350,8 @@ satelliteData.forEach((satData) => {
   group.add(leftPanel);
   group.add(rightPanel);
 
+  // IMPORTANT
+
   group.scale.set(
     2.5,
     2.5,
@@ -383,6 +359,8 @@ satelliteData.forEach((satData) => {
   );
 
   scene.add(group);
+
+  // TLE
 
   const satrec =
     satellite.twoline2satrec(
@@ -393,87 +371,14 @@ satelliteData.forEach((satData) => {
   satellites.push({
 
     mesh: group,
-    body,
     satrec,
     name: satData.name,
-    trail: [],
-    altitude: 0,
-    latitude: 0,
-    longitude: 0,
-    speed: 0,
-    nearestDistance: 0
+    altitude: 0
   });
 });
 
 // ======================
-// Selected Satellite
-// ======================
-
-let selectedSatellite = null;
-
-// ======================
-// Space Debris
-// ======================
-
-const debris = [];
-
-const debrisGeometry =
-  new THREE.SphereGeometry(
-    0.03,
-    4,
-    4
-  );
-
-const debrisMaterial =
-  new THREE.MeshBasicMaterial({
-    color: 0xffaa00
-  });
-
-for (let i = 0; i < 500; i++) {
-
-  const mesh =
-    new THREE.Mesh(
-      debrisGeometry,
-      debrisMaterial
-    );
-
-  const radius =
-    7 + Math.random() * 6;
-
-  const angle =
-    Math.random() * Math.PI * 2;
-
-  const inclination =
-    (Math.random() - 0.5) * Math.PI;
-
-  mesh.position.x =
-    radius *
-    Math.cos(angle);
-
-  mesh.position.z =
-    radius *
-    Math.sin(angle);
-
-  mesh.position.y =
-    radius *
-    Math.sin(inclination);
-
-  scene.add(mesh);
-
-  debris.push({
-
-    mesh,
-    radius,
-    angle,
-    inclination,
-    speed:
-      0.0005 +
-      Math.random() * 0.002
-  });
-}
-
-// ======================
-// Animation
+// Animate
 // ======================
 
 function animate() {
@@ -482,22 +387,18 @@ function animate() {
     animate
   );
 
-  orbitTrails.clear();
-
   const now =
     new Date();
 
   const gmst =
     satellite.gstime(now);
 
+  // Earth Rotation
+
   earth.rotation.y = gmst;
+  atmosphere.rotation.y = gmst;
 
-  atmosphere.rotation.y =
-    gmst;
-
-  // ======================
-  // SATELLITES
-  // ======================
+  // Satellites
 
   satellites.forEach((sat) => {
 
@@ -507,8 +408,7 @@ function animate() {
         now
       );
 
-    if (!pv.position ||
-        !pv.velocity)
+    if (!pv.position)
       return;
 
     const geo =
@@ -526,6 +426,10 @@ function animate() {
       satellite.degreesLong(
         geo.longitude
       );
+
+    // ======================
+    // FIXED STABLE SCALING
+    // ======================
 
     const altitude =
       Math.max(
@@ -564,149 +468,12 @@ function animate() {
       z
     );
 
-    sat.mesh.rotation.y +=
-      0.01;
-
-    // TRAILS
-
-    sat.trail.push(
-      new THREE.Vector3(
-        x,
-        y,
-        z
-      )
-    );
-
-    if (sat.trail.length > 120) {
-
-      sat.trail.shift();
-    }
-
-    const trailGeometry =
-      new THREE.BufferGeometry()
-        .setFromPoints(
-          sat.trail
-        );
-
-    const trailMaterial =
-      new THREE.LineBasicMaterial({
-        color: 0x00ffff
-      });
-
-    const trail =
-      new THREE.Line(
-        trailGeometry,
-        trailMaterial
-      );
-
-    orbitTrails.add(trail);
-
-    // DATA
-
     sat.altitude =
       geo.height.toFixed(2);
-
-    sat.latitude =
-      lat.toFixed(2);
-
-    sat.longitude =
-      lon.toFixed(2);
-
-    sat.speed =
-      Math.sqrt(
-        pv.velocity.x ** 2 +
-        pv.velocity.y ** 2 +
-        pv.velocity.z ** 2
-      ).toFixed(2);
-
-    sat.body.material.color.set(
-      sat.name === "ISS"
-        ? 0x00ff88
-        : 0xff5555
-    );
   });
 
   // ======================
-  // COLLISION DETECTION
-  // ======================
-
-  let dangerFound = false;
-
-  satellites.forEach((sat) => {
-
-    let nearestDistance =
-      Infinity;
-
-    debris.forEach((d) => {
-
-      const distance =
-        sat.mesh.position.distanceTo(
-          d.mesh.position
-        );
-
-      if (distance <
-          nearestDistance) {
-
-        nearestDistance =
-          distance;
-      }
-
-      if (distance < 0.45) {
-
-        dangerFound = true;
-
-        sat.body.material.color.set(
-
-          Math.sin(
-            Date.now() * 0.02
-          ) > 0
-
-          ? 0xff0000
-          : 0xffff00
-        );
-
-        if (alertPanel) {
-
-          alertPanel.style.display =
-            "block";
-
-          alertPanel.innerHTML = `
-
-            <h2>
-              ⚠ COLLISION ALERT
-            </h2>
-
-            <p>
-              <b>Satellite:</b>
-              ${sat.name}
-            </p>
-
-            <p>
-              <b>Distance:</b>
-              ${distance.toFixed(3)}
-            </p>
-
-            <p style="color:red">
-              Threat Level: HIGH
-            </p>
-          `;
-        }
-      }
-    });
-
-    sat.nearestDistance =
-      nearestDistance.toFixed(3);
-  });
-
-  if (!dangerFound &&
-      alertPanel) {
-
-    alertPanel.style.display =
-      "none";
-  }
-
-  // ======================
-  // HOVER
+  // Hover Detection
   // ======================
 
   raycaster.setFromCamera(
@@ -748,35 +515,9 @@ function animate() {
         mouseY + 15 + "px";
 
       label.innerHTML = `
-
-        <b>
-          ${hovered.name}
-        </b>
-
-        <br>
-
+        <b>${hovered.name}</b><br>
         Altitude:
         ${hovered.altitude} km
-
-        <br>
-
-        Latitude:
-        ${hovered.latitude}
-
-        <br>
-
-        Longitude:
-        ${hovered.longitude}
-
-        <br>
-
-        Speed:
-        ${hovered.speed} km/s
-
-        <br>
-
-        Nearest Debris:
-        ${hovered.nearestDistance}
       `;
     }
 
@@ -788,58 +529,6 @@ function animate() {
         "none";
     }
   }
-
-  // ======================
-  // CAMERA FOLLOW
-  // ======================
-
-  if (selectedSatellite) {
-
-    const satPos =
-      selectedSatellite.mesh.position;
-
-    controls.target.lerp(
-      satPos,
-      0.08
-    );
-
-    const desiredPosition =
-      satPos.clone().add(
-        new THREE.Vector3(
-          2,
-          1,
-          2
-        )
-      );
-
-    camera.position.lerp(
-      desiredPosition,
-      0.03
-    );
-  }
-
-  // ======================
-  // DEBRIS ANIMATION
-  // ======================
-
-  debris.forEach((d) => {
-
-    d.angle += d.speed;
-
-    d.mesh.position.x =
-      d.radius *
-      Math.cos(d.angle);
-
-    d.mesh.position.z =
-      d.radius *
-      Math.sin(d.angle);
-
-    d.mesh.position.y =
-      d.radius *
-      Math.sin(
-        d.inclination
-      );
-  });
 
   controls.update();
 
@@ -868,68 +557,6 @@ window.addEventListener(
     renderer.setSize(
       window.innerWidth,
       window.innerHeight
-    );
-  }
-);
-
-// ======================
-// Click Detection
-// ======================
-
-window.addEventListener(
-  "click",
-  () => {
-
-    raycaster.setFromCamera(
-      mouse,
-      camera
-    );
-
-    const hits =
-      raycaster.intersectObjects(
-        satellites.map(
-          s => s.mesh
-        ),
-        true
-      );
-
-    if (hits.length > 0) {
-
-      const obj =
-        hits[0].object;
-
-      const clicked =
-        satellites.find(
-
-          s =>
-            s.mesh === obj ||
-            s.mesh === obj.parent ||
-            s.mesh === obj.parent?.parent
-        );
-
-      if (clicked) {
-
-        selectedSatellite =
-          clicked;
-      }
-    }
-  }
-);
-
-// ======================
-// Double Click Reset
-// ======================
-
-window.addEventListener(
-  "dblclick",
-  () => {
-
-    selectedSatellite = null;
-
-    controls.target.set(
-      0,
-      0,
-      0
     );
   }
 );
