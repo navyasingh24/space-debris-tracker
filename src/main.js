@@ -217,6 +217,31 @@ const alertPanel =
     "alertPanel"
   );
 
+
+  const satCount =
+  document.getElementById(
+    "satCount"
+  );
+
+const debrisCount =
+  document.getElementById(
+    "debrisCount"
+  );
+
+const dangerCount =
+  document.getElementById(
+    "dangerCount"
+  );
+
+const trackingName =
+  document.getElementById(
+    "trackingName"
+  );
+
+const utcTime =
+  document.getElementById(
+    "utcTime"
+  );
 // ======================
 // Mouse
 // ======================
@@ -630,6 +655,7 @@ function animate() {
   // COLLISION DETECTION
   // ======================
 
+  let dangerCounter = 0;
   let dangerFound = false;
 
   satellites.forEach((sat) => {
@@ -654,6 +680,7 @@ function animate() {
       if (distance < 0.45) {
 
         dangerFound = true;
+        dangerCounter++;
 
         sat.body.material.color.set(
 
@@ -841,6 +868,23 @@ function animate() {
       );
   });
 
+  satCount.innerText =
+  satellites.length;
+
+debrisCount.innerText =
+  debris.length;
+
+dangerCount.innerText =
+  dangerCounter;
+
+trackingName.innerText =
+  selectedSatellite
+    ? selectedSatellite.name
+    : "NONE";
+
+utcTime.innerText =
+  now.toUTCString();
+  
   controls.update();
 
   renderer.render(
