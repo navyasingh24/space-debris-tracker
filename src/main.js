@@ -159,6 +159,40 @@ const atmosphere =
 scene.add(atmosphere);
 
 // ======================
+// Radar Ring
+// ======================
+
+const radarGeometry =
+  new THREE.RingGeometry(
+    7,
+    7.15,
+    64
+  );
+
+const radarMaterial =
+  new THREE.MeshBasicMaterial({
+
+    color: 0x00ffcc,
+
+    transparent: true,
+
+    opacity: 0.35,
+
+    side: THREE.DoubleSide
+  });
+
+const radarRing =
+  new THREE.Mesh(
+    radarGeometry,
+    radarMaterial
+  );
+
+radarRing.rotation.x =
+  Math.PI / 2;
+
+scene.add(radarRing);
+
+// ======================
 // Stars
 // ======================
 
@@ -241,6 +275,11 @@ const trackingName =
 const utcTime =
   document.getElementById(
     "utcTime"
+  );
+
+  const satelliteInfo =
+  document.getElementById(
+    "satelliteInfo"
   );
 // ======================
 // Mouse
@@ -520,6 +559,10 @@ function animate() {
   atmosphere.rotation.y =
     gmst;
 
+    // radar sweep
+
+radarRing.rotation.z += 0.01;
+
   // ======================
   // SATELLITES
   // ======================
@@ -629,7 +672,20 @@ function animate() {
     // DATA
 
     sat.altitude =
-      geo.height.toFixed(2);
+  geo.height.toFixed(2);
+
+sat.latitude =
+  lat.toFixed(2);
+
+sat.longitude =
+  lon.toFixed(2);
+
+sat.speed =
+  Math.sqrt(
+    pv.velocity.x ** 2 +
+    pv.velocity.y ** 2 +
+    pv.velocity.z ** 2
+  ).toFixed(2);
 
     sat.latitude =
       lat.toFixed(2);
@@ -884,7 +940,41 @@ trackingName.innerText =
 
 utcTime.innerText =
   now.toUTCString();
+  if (
+    selectedSatellite &&
+    satelliteInfo
+  ) {
   
+    satelliteInfo.innerHTML = `
+  
+      <b>Name:</b>
+      ${selectedSatellite.name}
+      <br>
+  
+      <b>Altitude:</b>
+      ${selectedSatellite.altitude} km
+      <br>
+  
+      <b>Latitude:</b>
+      ${selectedSatellite.latitude}°
+      <br>
+  
+      <b>Longitude:</b>
+      ${selectedSatellite.longitude}°
+      <br>
+  
+      <b>Velocity:</b>
+      ${selectedSatellite.speed} km/s
+      <br>
+  
+      <b>Nearest Debris:</b>
+      ${selectedSatellite.nearestDistance}
+      <br>
+  
+      <b>Status:</b>
+      ACTIVE
+    `;
+  }
   controls.update();
 
   renderer.render(

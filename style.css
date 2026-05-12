@@ -139,3 +139,52 @@ body {
   
     font-weight: bold;
   }
+
+  #satellitePanel {
+
+    position: absolute;
+  
+    top: 20px;
+    right: 20px;
+  
+    width: 300px;
+  
+    background:
+      rgba(0,0,0,0.7);
+  
+    border:
+      1px solid
+      rgba(0,255,255,0.25);
+  
+    border-radius: 12px;
+  
+    padding: 18px;
+  
+    color: white;
+  
+    font-family:
+      Arial, sans-serif;
+  
+    backdrop-filter:
+      blur(10px);
+  
+    z-index: 100;
+  }
+  
+  #satellitePanel h2 {
+  
+    color: cyan;
+  
+    margin-bottom: 15px;
+  
+    font-size: 18px;
+  }
+  
+  #satelliteInfo {
+  
+    line-height: 1.8;
+  
+    font-size: 14px;
+  
+    color: #dddddd;
+  }
