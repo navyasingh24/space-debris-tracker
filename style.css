@@ -1,0 +1,581 @@
+/* ==========================================================
+   ORBISTRACK — Space Debris Tracking System
+   Dark mission-control HUD — sharper, denser, professional
+   ========================================================== */
+
+   @import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap");
+
+   :root {
+     --bg:           #020609;
+     --panel-bg:     rgba(5, 12, 22, 0.78);
+     --panel-border: rgba(0, 210, 255, 0.18);
+     --accent:       #00d2ff;
+     --accent-dim:   rgba(0, 210, 255, 0.10);
+     --text-main:    #ddeeff;
+     --text-sub:     #6888aa;
+     --text-dim:     #3d566e;
+     --danger:       #ff3355;
+     --danger-bg:    rgba(255, 51, 85, 0.12);
+     --safe:         #00e5a0;
+     --warn:         #ffa020;
+     --mono:         "Share Tech Mono", "Courier New", monospace;
+     --sans:         "Inter", "Segoe UI", sans-serif;
+     --radius-sm:    6px;
+     --radius:       10px;
+   }
+   
+   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+   
+   html, body {
+     width: 100%; height: 100%;
+     overflow: hidden;
+     background: radial-gradient(ellipse at 50% 25%, #040d1a 0%, #020609 60%, #000102 100%);
+     font-family: var(--sans);
+     color: var(--text-main);
+     -webkit-font-smoothing: antialiased;
+   }
+   
+   canvas { display: block; }
+   
+   /* Vignette */
+   body::before {
+     content: "";
+     position: fixed; inset: 0;
+     pointer-events: none; z-index: 4;
+     background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.60) 100%);
+   }
+   
+   ::-webkit-scrollbar { width: 4px; }
+   ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 4px; }
+   
+   /* ==========================================================
+      TOP BAR
+      ========================================================== */
+   #topBar {
+     position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+     display: flex; flex-direction: column; align-items: center;
+     padding: 12px 0 8px;
+     pointer-events: none;
+     background: linear-gradient(to bottom, rgba(2,6,9,0.92) 0%, transparent 100%);
+   }
+   
+   .brand {
+     display: flex; align-items: center; gap: 9px;
+   }
+   
+   .brand-dot {
+     width: 7px; height: 7px;
+     border-radius: 50%;
+     background: var(--safe);
+     box-shadow: 0 0 8px 2px var(--safe);
+     animation: blink 1.8s ease-in-out infinite;
+   }
+   
+   .brand-title {
+     font-family: var(--mono);
+     font-size: 17px;
+     letter-spacing: 5px;
+     font-weight: 400;
+     color: var(--text-main);
+   }
+   
+   .brand-accent { color: var(--accent); }
+   
+   .topbar-sub {
+     margin-top: 3px;
+     font-size: 9px;
+     letter-spacing: 3.5px;
+     text-transform: uppercase;
+     color: var(--text-dim);
+     font-family: var(--mono);
+   }
+   
+   @keyframes blink {
+     0%, 100% { opacity: 1; }
+     50%       { opacity: 0.28; }
+   }
+   
+   /* ==========================================================
+      SHARED PANEL
+      ========================================================== */
+   .panel {
+     position: absolute;
+     background: var(--panel-bg);
+     border: 1px solid var(--panel-border);
+     border-radius: var(--radius);
+     backdrop-filter: blur(18px) saturate(130%);
+     -webkit-backdrop-filter: blur(18px) saturate(130%);
+     box-shadow: 0 6px 28px rgba(0,0,0,0.55),
+                 inset 0 1px 0 rgba(255,255,255,0.035);
+     z-index: 100;
+     animation: panelIn 0.5s ease both;
+   }
+   
+   @keyframes panelIn {
+     from { opacity: 0; transform: translateY(-6px); }
+     to   { opacity: 1; transform: translateY(0); }
+   }
+   
+   .panel-header {
+     display: flex; align-items: center; gap: 8px;
+     padding: 11px 14px 10px;
+     border-bottom: 1px solid rgba(0, 210, 255, 0.12);
+     font-family: var(--mono);
+     font-size: 10px;
+     letter-spacing: 2.5px;
+     text-transform: uppercase;
+     color: var(--accent);
+   }
+   
+   .pulse-dot {
+     width: 6px; height: 6px; border-radius: 50%;
+     background: var(--accent);
+     box-shadow: 0 0 6px var(--accent);
+     animation: blink 1.5s ease-in-out infinite;
+     flex-shrink: 0;
+   }
+   
+   /* ==========================================================
+      DASHBOARD  (top-left)
+      ========================================================== */
+   #dashboard {
+     top: 82px; left: 18px; width: 228px;
+   }
+   #dashboard .panel-body { padding: 6px 0 8px; }
+   
+   .stat {
+     display: flex; align-items: center; justify-content: space-between;
+     padding: 7px 14px;
+     border-bottom: 1px solid rgba(255,255,255,0.04);
+   }
+   .stat:last-child { border-bottom: none; }
+   
+   .stat-label {
+     font-size: 10px;
+     letter-spacing: 0.8px;
+     text-transform: uppercase;
+     color: var(--text-sub);
+     font-family: var(--sans);
+     font-weight: 500;
+   }
+   
+   .stat-value {
+     font-family: var(--mono);
+     font-size: 13px;
+     color: var(--text-main);
+     letter-spacing: 0.5px;
+   }
+   
+   .stat-mono {
+     font-family: var(--mono);
+     font-size: 12px;
+     color: var(--accent);
+     letter-spacing: 1px;
+   }
+   
+   .stat-danger { color: var(--danger); }
+   .stat-warn   { color: var(--warn);   }
+
+   /* Diagnostic row (TLE source + live valid-object counts) is longer
+      than a normal stat value, so it gets its own stacked layout
+      instead of forcing a single line to overflow the panel. */
+   .stat-diagnostic {
+     flex-direction: column; align-items: flex-start; gap: 4px;
+     padding-bottom: 10px;
+   }
+   .stat-diagnostic .stat-value {
+     font-size: 10px;
+     line-height: 1.5;
+     white-space: normal;
+     word-break: break-word;
+     color: var(--text-sub);
+   }
+   
+   /* ==========================================================
+      SATELLITE DETAIL PANEL  (top-right)
+      ========================================================== */
+   #satellitePanel {
+     top: 82px; right: 18px; width: 268px;
+     max-height: 62vh; overflow-y: auto;
+   }
+   #satellitePanel .panel-body { padding: 4px 0 10px; }
+   
+   .empty-state {
+     text-align: center; padding: 22px 0;
+     color: var(--text-sub); font-size: 11px; opacity: 0.65;
+     font-family: var(--mono); letter-spacing: 0.5px;
+   }
+   
+   .info-row {
+     display: flex; justify-content: space-between; align-items: center;
+     padding: 6px 14px;
+     border-bottom: 1px solid rgba(255,255,255,0.04);
+   }
+   .info-row:last-child { border-bottom: none; }
+   
+   .info-label {
+     font-size: 9px;
+     letter-spacing: 1.5px;
+     text-transform: uppercase;
+     color: var(--text-sub);
+     font-family: var(--mono);
+   }
+   
+   .info-value {
+     font-family: var(--mono);
+     font-size: 12px;
+     color: var(--text-main);
+     letter-spacing: 0.4px;
+     text-align: right;
+   }
+   
+   .threat-badge {
+     display: inline-block;
+     padding: 2px 9px;
+     border-radius: 3px;
+     font-family: var(--mono);
+     font-size: 9px;
+     letter-spacing: 1.5px;
+     font-weight: 400;
+   }
+   .threat-safe     { background: rgba(0,229,160,0.12); color: var(--safe); border: 1px solid rgba(0,229,160,0.35); }
+   .threat-low      { background: rgba(255,160,32,0.12); color: var(--warn); border: 1px solid rgba(255,160,32,0.35); }
+   .threat-high,
+   .threat-critical { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(255,51,85,0.40); }
+   .threat-emergency {
+     background: rgba(255,20,60,0.30);
+     color: #ffffff;
+     border: 1px solid rgba(255,20,60,0.75);
+     animation: dangerBlink 1s ease-in-out infinite;
+   }
+   
+   /* ==========================================================
+      ALERT PANEL  (bottom-right)
+      ========================================================== */
+   #alertPanel {
+     bottom: 22px; right: 18px; width: 268px;
+     border-color: var(--danger);
+     box-shadow: 0 0 20px rgba(255,51,85,0.28), 0 6px 28px rgba(0,0,0,0.55);
+     display: none;
+   }
+   #alertPanel .panel-header {
+     color: var(--danger);
+     border-bottom-color: rgba(255,51,85,0.22);
+     animation: dangerBlink 1.4s ease-in-out infinite;
+   }
+   #alertPanel .panel-body { padding: 4px 0 10px; }
+   
+   @keyframes dangerBlink {
+     0%, 100% { opacity: 1; }
+     50%       { opacity: 0.55; }
+   }
+   
+   .danger { color: var(--danger); font-weight: 600; }
+   .safe   { color: var(--safe);   font-weight: 600; }
+   
+   /* ==========================================================
+      HOVER TOOLTIP
+      ========================================================== */
+   #satelliteLabel {
+     position: fixed;
+     background: rgba(4, 10, 20, 0.96);
+     border: 1px solid var(--accent);
+     color: var(--text-main);
+     padding: 9px 13px;
+     border-radius: var(--radius-sm);
+     font-family: var(--mono);
+     font-size: 11px;
+     line-height: 1.8;
+     letter-spacing: 0.4px;
+     pointer-events: none;
+     display: none;
+     z-index: 200;
+     box-shadow: 0 0 14px rgba(0,210,255,0.22);
+     min-width: 160px;
+   }
+   #satelliteLabel b {
+     color: var(--accent);
+     font-size: 11px;
+     letter-spacing: 1px;
+     text-transform: uppercase;
+     display: block;
+     margin-bottom: 4px;
+   }
+   
+   /* ==========================================================
+      ERROR BANNER
+      ========================================================== */
+   #errorBanner {
+     position: fixed; bottom: 14px; left: 14px;
+     max-width: 400px; z-index: 999; display: none;
+     background: rgba(30, 4, 8, 0.96);
+     border: 1px solid var(--danger);
+     color: #ffd0d8;
+     font-family: var(--mono);
+     font-size: 11px;
+     line-height: 1.6; padding: 10px 14px;
+     border-radius: var(--radius-sm);
+     box-shadow: 0 0 18px rgba(255,51,85,0.35);
+     white-space: pre-wrap; word-break: break-word;
+   }
+   #errorBanner.visible { display: block; }
+   
+   /* ==========================================================
+      BOTTOM CONTROLS HINT
+      ========================================================== */
+   #controlsHint {
+     position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+     display: flex; gap: 26px; padding: 7px 20px;
+     background: rgba(5, 12, 22, 0.72);
+     border: 1px solid var(--panel-border);
+     border-radius: 24px;
+     backdrop-filter: blur(10px);
+     z-index: 90;
+     font-size: 10px;
+     letter-spacing: 0.8px;
+     text-transform: uppercase;
+     color: var(--text-dim);
+     font-family: var(--mono);
+     white-space: nowrap;
+   }
+   
+   /* ==========================================================
+      PRIORITY CONJUNCTIONS PANEL (left column, below dashboard)
+      Phase 2: Smart Conjunction Prioritization
+      ========================================================== */
+   #priorityPanel {
+     top: 400px; left: 18px; width: 228px;
+     max-height: 210px; overflow-y: auto;
+   }
+   #priorityPanel .panel-body { padding: 4px 0 8px; }
+
+   .priority-row {
+     display: flex; align-items: center; gap: 8px;
+     padding: 7px 14px;
+     border-bottom: 1px solid rgba(255,255,255,0.04);
+     cursor: pointer;
+   }
+   .priority-row:last-child { border-bottom: none; }
+
+   .priority-rank {
+     font-family: var(--mono);
+     font-size: 10px;
+     color: var(--text-sub);
+     min-width: 18px;
+   }
+
+   .priority-main { flex: 1; min-width: 0; }
+
+   .priority-names {
+     font-family: var(--sans);
+     font-size: 11px;
+     color: var(--text-main);
+     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+   }
+
+   .priority-meta {
+     font-family: var(--mono);
+     font-size: 9px;
+     color: var(--text-sub);
+     letter-spacing: 0.3px;
+     margin-top: 2px;
+     display: flex; align-items: center; gap: 5px;
+     white-space: nowrap; overflow: hidden;
+   }
+   .priority-meta .threat-badge { padding: 1px 6px; font-size: 8px; }
+
+   .priority-score {
+     font-family: var(--mono);
+     font-size: 14px;
+     font-weight: 600;
+     color: var(--accent);
+     min-width: 26px;
+     text-align: right;
+   }
+
+   /* ---- Phase 2B: explainable priority scoring ---- */
+
+   .confidence-badge {
+     display: inline-block;
+     padding: 1px 6px;
+     border-radius: 3px;
+     font-family: var(--mono);
+     font-size: 8px;
+     letter-spacing: 0.6px;
+   }
+   .confidence-high   { background: rgba(255,51,85,0.16);  color: var(--danger); border: 1px solid rgba(255,51,85,0.35); }
+   .confidence-medium { background: rgba(255,160,32,0.14); color: var(--warn);   border: 1px solid rgba(255,160,32,0.35); }
+   .confidence-low    { background: rgba(0,229,160,0.12);  color: var(--safe);  border: 1px solid rgba(0,229,160,0.3); }
+
+   .priority-details {
+     margin-top: 8px;
+     padding-top: 8px;
+     border-top: 1px dashed rgba(255,255,255,0.08);
+   }
+   .priority-section-title {
+     font-family: var(--mono);
+     font-size: 9px;
+     letter-spacing: 0.8px;
+     text-transform: uppercase;
+     color: var(--text-sub);
+     margin: 6px 0 4px;
+   }
+   .priority-reasons {
+     margin: 0; padding-left: 14px;
+     font-family: var(--sans);
+     font-size: 10.5px;
+     color: var(--text-main);
+     line-height: 1.6;
+   }
+   .priority-reasons li.contributor-top { color: var(--accent); font-weight: 600; }
+
+   .priority-breakdown { display: flex; flex-direction: column; gap: 2px; }
+   .breakdown-row {
+     display: flex; justify-content: space-between;
+     font-family: var(--mono);
+     font-size: 9.5px;
+     color: var(--text-sub);
+     padding: 1px 0;
+   }
+   .breakdown-row.contributor-top { color: var(--accent); font-weight: 600; }
+   .breakdown-row.breakdown-total {
+     margin-top: 4px; padding-top: 4px;
+     border-top: 1px solid rgba(255,255,255,0.08);
+     color: var(--text-main); font-weight: 600;
+   }
+   .breakdown-row.breakdown-gate {
+     color: var(--accent);
+     font-weight: 600;
+   }
+   .priority-gate-note {
+     font-family: var(--sans);
+     font-size: 9px;
+     color: var(--text-sub);
+     font-style: italic;
+     margin: -1px 0 5px;
+   }
+   .breakdown-weight {
+     opacity: 0.6;
+     font-size: 8.5px;
+   }
+
+   /* ==========================================================
+      SEARCH & FILTER PANEL
+      Deliberately top-anchored right after #priorityPanel (rather
+      than bottom-anchored, which is what previously let the two
+      panels overlap on shorter viewports — with one measured from
+      the top and the other from the bottom, the gap between them
+      shrinks or vanishes depending on viewport height). Anchoring
+      both from the top with a fixed offset removes that ambiguity
+      entirely. It also gets its own max-height/scroll as a safety
+      net, same pattern as the other panels.
+      ========================================================== */
+   #trackingPanel {
+     top: 636px; left: 18px; width: 250px;
+     max-height: calc(100vh - 660px); overflow-y: auto;
+   }
+   #trackingPanel .panel-body { padding: 10px 14px 12px; }
+
+   .search-row {
+     display: flex; gap: 6px; margin-bottom: 10px;
+   }
+   .search-row input {
+     flex: 1; min-width: 0;
+     background: rgba(0,0,0,0.35);
+     border: 1px solid var(--panel-border);
+     border-radius: var(--radius-sm);
+     color: var(--text-main);
+     font-family: var(--mono);
+     font-size: 11px;
+     padding: 7px 9px;
+     outline: none;
+   }
+   .search-row input:focus { border-color: var(--accent); }
+   .search-row input::placeholder { color: var(--text-dim); }
+
+   .search-row button,
+   .time-btn {
+     background: var(--accent-dim);
+     border: 1px solid var(--panel-border);
+     color: var(--accent);
+     font-family: var(--mono);
+     font-size: 10px;
+     letter-spacing: 1px;
+     border-radius: var(--radius-sm);
+     padding: 7px 10px;
+     cursor: pointer;
+     transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+   }
+   .search-row button:hover,
+   .time-btn:hover { background: rgba(0,210,255,0.20); }
+
+   .filter-row {
+     display: flex; flex-wrap: wrap; gap: 6px;
+   }
+   .filter-chip {
+     background: transparent;
+     border: 1px solid var(--panel-border);
+     color: var(--text-sub);
+     font-family: var(--mono);
+     font-size: 9px;
+     letter-spacing: 0.8px;
+     text-transform: uppercase;
+     border-radius: 20px;
+     padding: 5px 10px;
+     cursor: pointer;
+     transition: all 0.15s ease;
+   }
+   .filter-chip:hover { border-color: var(--accent); color: var(--text-main); }
+   .filter-chip.active {
+     background: var(--accent-dim);
+     border-color: var(--accent);
+     color: var(--accent);
+   }
+
+   /* ==========================================================
+      TIME CONTROLS (bottom-center, above controls hint)
+      ========================================================== */
+   #timeControls {
+     position: fixed; bottom: 58px; left: 50%; transform: translateX(-50%);
+     display: flex; gap: 6px; z-index: 90;
+   }
+   .time-btn.active {
+     background: rgba(0,210,255,0.22);
+     border-color: var(--accent);
+     color: var(--text-main);
+   }
+   #pauseBtn.active { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+   /* ==========================================================
+      OBJECT TYPE BADGE
+      ========================================================== */
+   .type-badge {
+     display: inline-block;
+     padding: 2px 9px;
+     border-radius: 3px;
+     font-family: var(--mono);
+     font-size: 9px;
+     letter-spacing: 1.2px;
+     text-transform: uppercase;
+   }
+   .type-satellite  { background: rgba(0,210,255,0.12);  color: var(--accent); border: 1px solid rgba(0,210,255,0.35); }
+   .type-starlink   { background: rgba(120,140,255,0.14); color: #9aa8ff;      border: 1px solid rgba(120,140,255,0.4); }
+   .type-debris     { background: rgba(255,136,0,0.14);  color: #ff8800;      border: 1px solid rgba(255,136,0,0.4); }
+   .type-rocket-body{ background: rgba(180,180,190,0.12); color: #b8bcc4;     border: 1px solid rgba(180,180,190,0.35); }
+
+   .threat-medium { background: rgba(255,120,20,0.14); color: #ff8c2a; border: 1px solid rgba(255,120,20,0.4); }
+
+   .status-active  { background: rgba(0,255,162,0.12);  color: #00ffa2; border: 1px solid rgba(0,255,162,0.35); }
+   .status-defunct { background: rgba(160,160,170,0.14); color: #a0a0aa; border: 1px solid rgba(160,160,170,0.4); }
+   .status-unknown { background: rgba(255,200,0,0.10);  color: #e0c040; border: 1px solid rgba(255,200,0,0.3); }
+   .status-na      { background: rgba(120,120,130,0.10); color: #78787f; border: 1px solid rgba(120,120,130,0.3); }
+
+   /* ==========================================================
+      RESPONSIVE
+      ========================================================== */
+   @media (max-width: 820px) {
+     #dashboard, #satellitePanel, #trackingPanel, #priorityPanel { width: 190px; }
+     #controlsHint { gap: 14px; padding: 6px 14px; font-size: 9px; }
+     #timeControls { bottom: 96px; flex-wrap: wrap; justify-content: center; width: 90vw; }
+     .topbar-sub   { display: none; }
+   }

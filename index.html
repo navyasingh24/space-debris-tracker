@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrbisTrack — Space Debris Monitoring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <div id="topBar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-title">ORBIS<span class="brand-accent">TRACK</span></span>
+    </div>
+    <div class="topbar-sub">Space Debris &amp; Conjunction Monitoring System</div>
+  </div>
+
+  <!-- Mission Control dashboard -->
+  <div id="dashboard" class="panel">
+    <div class="panel-header"><span class="pulse-dot"></span>Mission Control</div>
+    <div class="panel-body">
+      <div class="stat">
+        <span class="stat-label">Active Satellites</span>
+        <span id="satCount" class="stat-value">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Debris Objects</span>
+        <span id="debrisCount" class="stat-value">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Conjunctions</span>
+        <span id="dangerCount" class="stat-value stat-danger">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Tracking</span>
+        <span id="trackingName" class="stat-value stat-mono">NONE</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">UTC</span>
+        <span id="utcTime" class="stat-value stat-mono">--:--:--</span>
+      </div>
+      <div class="stat stat-diagnostic">
+        <span class="stat-label">Data Diagnostics</span>
+        <span id="dataSourceNote" class="stat-value">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Priority Conjunctions (Phase 2: Smart Conjunction Prioritization) -->
+  <div id="priorityPanel" class="panel">
+    <div class="panel-header"><span class="pulse-dot"></span>Priority Conjunctions</div>
+    <div class="panel-body">
+      <div id="priorityList">
+        <div class="empty-state">No active conjunction candidates<br><span style="opacity:.5;font-size:10px">Ranking updates automatically</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & filter -->
+  <div id="trackingPanel" class="panel">
+    <div class="panel-header"><span class="pulse-dot"></span>Search &amp; Filter</div>
+    <div class="panel-body">
+      <div class="search-row">
+        <input id="searchInput" type="text" placeholder="Name or NORAD ID…" autocomplete="off" />
+        <button id="searchBtn" type="button">GO</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-chip active" data-filter="all" type="button">All</button>
+        <button class="filter-chip" data-filter="satellite" type="button">Satellite</button>
+        <button class="filter-chip" data-filter="debris" type="button">Debris</button>
+        <button class="filter-chip" data-filter="rocket-body" type="button">Rocket Body</button>
+        <button class="filter-chip" data-filter="starlink" type="button">Starlink</button>
+        <button class="filter-chip" data-filter="defunct" type="button">Defunct</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Object detail panel -->
+  <div id="satellitePanel" class="panel">
+    <div class="panel-header"><span class="pulse-dot"></span>Object Data</div>
+    <div class="panel-body">
+      <div id="satelliteInfo">
+        <div class="empty-state">No object selected<br><span style="opacity:.5;font-size:10px">Click a satellite to inspect</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conjunction alert -->
+  <div id="alertPanel" class="panel">
+    <div class="panel-header"><span class="pulse-dot"></span>Conjunction Alert</div>
+    <div class="panel-body">
+      <div id="alertContent"></div>
+    </div>
+  </div>
+
+  <!-- Hover tooltip -->
+  <div id="satelliteLabel"></div>
+
+  <!-- Diagnostic error -->
+  <div id="errorBanner"></div>
+
+  <!-- Simulation time controls -->
+  <div id="timeControls">
+    <button id="pauseBtn" class="time-btn" type="button" title="Pause / Resume">⏸</button>
+    <button class="time-btn active" data-speed="1" type="button">1×</button>
+    <button class="time-btn" data-speed="10" type="button">10×</button>
+    <button class="time-btn" data-speed="100" type="button">100×</button>
+    <button class="time-btn" data-speed="1000" type="button">1000×</button>
+  </div>
+
+  <!-- Controls hint -->
+  <div id="controlsHint">
+    <span>Drag — Orbit</span>
+    <span>Scroll — Zoom</span>
+    <span>Click — Select</span>
+    <span>Dbl-click — Reset</span>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
